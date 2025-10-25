@@ -1,0 +1,10 @@
+{
+    "display_name": "Custom Tag Cleanup",
+    "version": "0.3.0",
+    "author": "Reiki Von Lareine",
+    "description": "Manual-only cleaner: กดแล้วลบข้อความเก่าตาม regex/taglist เหลือไว้ N ข้อความล่าสุด พร้อมรีเฟรชแชททันที",
+    "js": "index.js",
+    "css": "style.css",
+    "loading_order": 61,
+    "minimum_client_version": "0.0.0"
+}
