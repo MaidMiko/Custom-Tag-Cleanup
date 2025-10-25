@@ -43,7 +43,7 @@
 
 - เมื่ออยู่ในห้องแชท ให้กดปุ่ม **🧹 Clean**  
 - ระบบจะลบแท็กทั้งหมดที่ระบุออกจากทุกข้อความ  
-- ข้อความล่าสุด (ค่าเริ่มต้น 3 อันสุดท้าย) จะถูกเก็บไว้  
+- ข้อความล่าสุด (ค่าเริ่มต้น 2 อันสุดท้าย) จะถูกเก็บไว้  
 - หลังทำงาน จะมี Toast แจ้งผล:  
   - จำนวนอักขระที่ลบ  
   - จำนวนโทเค็นโดยประมาณที่ประหยัดได้
@@ -55,7 +55,6 @@
 
 - ระบบจะไม่ลบโค้ดบล็อก (```) หรือข้อความใน backtick (`…`)  
 - HTML ปกติ (เช่น `<p>`, `<div>`) จะไม่ถูกแตะต้อง  
-- ถ้าอยากเปลี่ยนจำนวนข้อความที่ “เว้นไว้” ให้แก้ค่า `keepLatest` ในไฟล์ `index.js`
 
 ---
 
@@ -65,7 +64,7 @@
 
 A **SillyTavern** extension that cleans up chat logs  
 by removing unwanted internal/debug tags from previous messages,  
-leaving only the latest *N* messages (default: 3).
+leaving only the latest *N* messages (default: 2).
 
 ### Features
 
@@ -92,7 +91,7 @@ leaving only the latest *N* messages (default: 3).
 
 - Click the **🧹 Clean** button while in a chat  
 - The extension will remove all unwanted tags  
-- Keeps only the most recent *N* messages (default 3)  
+- Keeps only the most recent *N* messages (default 2)  
 - A toast will appear showing how many characters/tokens were saved  
 
 > Manual-only mode — no auto clean, no settings menu.  
@@ -102,7 +101,6 @@ leaving only the latest *N* messages (default: 3).
 
 - Code fences (```...```) and inline code (`...`) are preserved.  
 - Standard HTML tags (`<p>`, `<div>`, etc.) are untouched.  
-- Change `keepLatest` in `index.js` if you want to adjust preserved message count.
 
 ---
 
