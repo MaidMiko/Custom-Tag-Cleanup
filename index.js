@@ -64,8 +64,8 @@
 
     function strip(text) {
         if (typeof text !== "string" || !text) return { text, removed: 0 };
-        const r = regex();
-        if (!r) return { text, removed: 0 };
+
+        // กัน code-fence / inline code
         const fence = /```[\s\S]*?```/g,
             inline = /`[^`]*`/g;
         const B = [],
@@ -73,22 +73,63 @@
         let tmp = text
             .replace(fence, (m) => `@@B${B.push(m) - 1}@@`)
             .replace(inline, (m) => `@@I${I.push(m) - 1}@@`);
+
         let removed = 0;
-        for (let i = 0; i < (st().maxPasses || 1); i++) {
-            let ch = false;
-            tmp = tmp.replace(r, (m, tag, off, str) => {
-                removed += m.length;
-                ch = true;
-                if (!st().preserveSpace) return "";
-                const n = str[off + m.length],
-                    p = str[off - 1];
-                return /\s/.test(p) || /\s/.test(n) ? "" : " ";
-            });
-            if (!ch) break;
+
+        // ✅ สร้างแพตเทิร์นจาก tagList เท่านั้น (ลบ "ทั้งก้อน")
+        const names = (st().tagList || [])
+            .map((x) => String(x).trim())
+            .filter(Boolean);
+        if (names.length === 0) {
+            // ไม่มีอะไรให้ลบ
+            tmp = tmp
+                .replace(/@@I(\d+)@@/g, (_, i) => I[i])
+                .replace(/@@B(\d+)@@/g, (_, i) => B[i]);
+            return { text: tmp, removed: 0 };
         }
+        const group = names.join("|");
+
+        // (1) ลบแท็กคู่แบบ wipe: <TAG ...> ... </TAG>
+        // ใช้หลาย pass เพื่อเก็บซ้อนชั้น
+        const maxPass = Math.max(1, st().maxPasses || 1);
+        const pair = new RegExp(
+            `<\\s*(${group})\\b[^>]*>[\\s\\S]*?<\\/\\s*\\1\\s*>`,
+            "gi"
+        );
+        for (let i = 0; i < maxPass; i++) {
+            let changed = false;
+            tmp = tmp.replace(pair, (m) => {
+                removed += m.length;
+                changed = true;
+                return "";
+            });
+            if (!changed) break;
+        }
+
+        // (2) ลบ self-closing + open/close ที่เหลือของรายชื่อเดียวกัน
+        const selfClose = new RegExp(`<\\s*(?:${group})\\b[^>]*\\/\\s*>`, "gi");
+        tmp = tmp.replace(selfClose, (m) => {
+            removed += m.length;
+            return "";
+        });
+
+        const openOnly = new RegExp(`<\\s*(?:${group})\\b[^>]*>`, "gi");
+        tmp = tmp.replace(openOnly, (m) => {
+            removed += m.length;
+            return "";
+        });
+
+        const closeOnly = new RegExp(`<\\/\\s*(?:${group})\\s*>`, "gi");
+        tmp = tmp.replace(closeOnly, (m) => {
+            removed += m.length;
+            return "";
+        });
+
+        // คืน code blocks/inline
         tmp = tmp
             .replace(/@@I(\d+)@@/g, (_, i) => I[i])
             .replace(/@@B(\d+)@@/g, (_, i) => B[i]);
+
         return { text: tmp, removed };
     }
 
